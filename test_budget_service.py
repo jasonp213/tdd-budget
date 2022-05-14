@@ -73,6 +73,18 @@ class TestBudgetService(unittest.TestCase):
             start,
             end))
 
+    def test_not_overlap(self):
+        self.given_repo_budgets([
+            Budget('202204', 60000),
+        ])
+
+        start = date(2022, 4, 30)
+        end = date(2022, 4, 30)
+
+        self.assertEqual(Decimal(0), self.service.query(
+            start,
+            end))
+
     def given_repo_budgets(self, budgets):
         self.fake_repo_all.return_value = budgets
 
