@@ -1,6 +1,7 @@
 import calendar
 from datetime import date
 from decimal import Decimal
+from typing import Tuple
 
 from repo import BudgetRepo
 
@@ -11,14 +12,16 @@ class BudgetService:
         total = Decimal(0)
         if start > end:
             return total
-        total_budget = BudgetRepo().get_all()
-
-        for budget in total_budget:
-            year, month = self.parse_year_month_str(budget.year_month)
-            _, days = calendar.monthrange(year, month)
-            had_days = self.get_days_between_budget(year, month, days, start, end)
-            total += Decimal(budget.amount) * (Decimal(had_days) / Decimal(days))
+        for budget in BudgetRepo.get_all():
+            partial_amount = self.partial_amount(budget, start, end)
+            total += partial_amount
         return total
+
+    def partial_amount(self, budget, start, end) -> Decimal:
+        year, month = self.parse_year_month_str(budget.year_month)
+        _, days = calendar.monthrange(year, month)
+        had_days = self.get_days_between_budget(year, month, days, start, end)
+        return Decimal(budget.amount) * (Decimal(had_days) / Decimal(days))
 
     def get_days_between_budget(self, year, month, days, start, end) -> int:
         budget_start = date(year, month, 1)
@@ -28,8 +31,9 @@ class BudgetService:
         return 0
 
     @staticmethod
-    def is_intersection(budget_start, budget_end, start, end):
+    def is_intersection(budget_start, budget_end, start, end) -> bool:
         return budget_end > start or budget_start < end
 
-    def parse_year_month_str(self, year_month):
+    @staticmethod
+    def parse_year_month_str(year_month) -> Tuple[int, int]:
         return int(year_month[:4]), int(year_month[-2:])

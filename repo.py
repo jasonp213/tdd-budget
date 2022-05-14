@@ -10,5 +10,6 @@ class Budget:
 
 class BudgetRepo:
 
-    def get_all(self) -> List[Budget]:
+    @classmethod
+    def get_all(cls) -> List[Budget]:
         pass

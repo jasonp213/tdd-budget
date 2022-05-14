@@ -26,6 +26,29 @@ class TestBudgetService(unittest.TestCase):
         end = date(2022, 5, 31)
         self.assertEqual(Decimal(10000), self.service.query(start, end))
 
+    def test_one_day(self):
+        self.fake_get_all.return_value = [Budget("202205", 310)]
+        start = date(2022, 5, 1)
+        end = start
+        self.assertEqual(Decimal(10), self.service.query(start, end))
+
+    def test_cross_month(self):
+        self.fake_get_all.return_value = [
+            Budget("202205", 310),
+            Budget("202204", 6000),
+        ]
+        start = date(2022, 4, 30)
+        end = date(2022, 5, 2)
+        self.assertEqual(Decimal(1 * 200 + 2 * 10), self.service.query(start, end))
+
+    def test_repo_not_amount(self):
+        self.fake_get_all.return_value = [
+            Budget("202204", 6000),
+        ]
+        start = date(2022, 5, 1)
+        end = date(2022, 5, 2)
+        self.assertEqual(Decimal(0), self.service.query(start, end))
+
     def test_parse_year_month(self):
         year, month = self.service.parse_year_month_str('202205')
         self.assertEqual(2022, year)
