@@ -13,11 +13,11 @@ class BudgetService:
         if start > end:
             return total
         for budget in BudgetRepo.get_all():
-            partial_amount = self.partial_amount(budget, start, end)
+            partial_amount = self.amount_of_budget(budget, start, end)
             total += partial_amount
         return total
 
-    def partial_amount(self, budget, start, end) -> Decimal:
+    def amount_of_budget(self, budget, start, end) -> Decimal:
         year, month = self.parse_year_month_str(budget.year_month)
         _, days = calendar.monthrange(year, month)
         had_days = self.get_days_between_budget(year, month, days, start, end)
