@@ -26,6 +26,11 @@ class TestBudgetService(unittest.TestCase):
         end = date(2022, 5, 31)
         self.assertEqual(Decimal(10000), self.service.query(start, end))
 
+    def test_parse_year_month(self):
+        year, month = self.service.parse_year_month_str('202205')
+        self.assertEqual(2022, year)
+        self.assertEqual(5, month)
+
 
 if __name__ == '__main__':
     unittest.main()
